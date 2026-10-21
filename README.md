@@ -4,9 +4,12 @@
   De archivos heterogéneos a probabilidades posteriores, intervalos creíbles y decisiones interpretables.</p>
   <p>
     <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="Python">
+    <img src="https://img.shields.io/badge/pandas-150458?logo=pandas&logoColor=white" alt="pandas">
+    <img src="https://img.shields.io/badge/NumPy-013243?logo=numpy&logoColor=white" alt="NumPy">
     <img src="https://img.shields.io/badge/R-276DC3?logo=r&logoColor=white" alt="R">
     <img src="https://img.shields.io/badge/brms-Bayesian-5B4B8A" alt="brms">
     <img src="https://img.shields.io/badge/Stan-MCMC-1F6F8B" alt="Stan">
+    <img src="https://img.shields.io/badge/Jupyter-F37626?logo=jupyter&logoColor=white" alt="Jupyter">
     <img src="https://img.shields.io/badge/R%20Markdown-Documentation-1D3557" alt="R Markdown">
   </p>
   <p><a href="analysis/Proyecto_bayesiana_delitos.Rmd">Ver el análisis</a> · <a href="report/Proyecto_bayesiana_delitos.pdf">Leer el informe histórico</a> · <a href="#evidencia">Seguir la evidencia</a></p>  <p><a href="#resumen">Resumen</a> · <a href="#ruta">Ruta</a> · <a href="#preguntas">Modelos</a> · <a href="#resultados">Resultados</a> · <a href="#trabajo">Mi trabajo</a> · <a href="#evidencia">Evidencia</a> · <a href="#detalles">Alcance</a></p>
