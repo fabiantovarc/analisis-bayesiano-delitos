@@ -1,133 +1,134 @@
-# Delitos bajo incertidumbre
+<div align="center">
+  <h1>Delitos bajo incertidumbre</h1>
+  <p><strong>Preparación de datos en Python e inferencia bayesiana en R</strong><br>
+  De archivos heterogéneos a probabilidades posteriores, intervalos creíbles y decisiones interpretables.</p>
+  <p>
+    <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="Python">
+    <img src="https://img.shields.io/badge/R-276DC3?logo=r&logoColor=white" alt="R">
+    <img src="https://img.shields.io/badge/brms-Bayesian-5B4B8A" alt="brms">
+    <img src="https://img.shields.io/badge/Stan-MCMC-1F6F8B" alt="Stan">
+    <img src="https://img.shields.io/badge/R%20Markdown-Documentation-1D3557" alt="R Markdown">
+  </p>
+  <p><a href="analysis/Proyecto_bayesiana_delitos.Rmd">Ver el análisis</a> · <a href="report/Proyecto_bayesiana_delitos.pdf">Leer el informe histórico</a> · <a href="#evidencia">Seguir la evidencia</a></p>  <p><a href="#resumen">Resumen</a> · <a href="#ruta">Ruta</a> · <a href="#preguntas">Modelos</a> · <a href="#resultados">Resultados</a> · <a href="#trabajo">Mi trabajo</a> · <a href="#evidencia">Evidencia</a> · <a href="#detalles">Alcance</a></p>
+</div>
 
-### Preparación de datos en Python e inferencia bayesiana en R
+**Autor:** [Fabián Tovar](https://github.com/fabiantovarc) · **Informe histórico:** mayo de 2025
 
-**De archivos heterogéneos a preguntas estadísticas, distribuciones posteriores y límites de interpretación.**
+<a id="resumen"></a>
+## En 30 segundos
 
-Este proyecto académico analiza registros delictivos de Bogotá y Cali mediante modelos Beta–Binomial, Dirichlet–Multinomial y regresión Poisson bayesiana. Integra preparación de datos en Python, modelado en R y comunicación de resultados con intervalos creíbles y chequeos predictivos posteriores.
+<table align="center">
+  <tr>
+    <td align="center"><strong>419.907</strong><br>registros de Bogotá</td>
+    <td align="center"><strong>214.299</strong><br>filas de Cali</td>
+    <td align="center"><strong>≈1,87 millones</strong><br>filas en preparación</td>
+    <td align="center"><strong>3</strong><br>familias bayesianas</td>
+  </tr>
+</table>
 
-**Autor:** [Fabián Tovar — Edisson Fabian Tovar Castro](https://github.com/fabiantovarc) · **Informe histórico:** mayo de 2025.
+> **🎯 Aporte central:** convertir preguntas sobre registros delictivos en distribuciones de incertidumbre, en lugar de reducir el análisis a una predicción puntual.
 
-[Resumen](#el-proyecto-en-30-segundos) · [Proceso](#de-la-fuente-a-la-inferencia) · [Resultados](#resultados-del-informe) · [Competencias](#qué-demuestra-este-proyecto) · [Archivos](#recorrido-por-el-repositorio)
+Este proyecto integra limpieza de datos en Python con inferencia en R para estudiar proporciones, composición etaria y tendencias temporales en registros de Bogotá y Cali. Los modelos trabajan con muestras de **400 registros o eventos**, según la pregunta; la cifra de preparación no es el tamaño de las muestras modeladas.
 
----
-
-## El proyecto en 30 segundos
-
-| Dimensión | Evidencia |
-|---|---|
-| Problema | Cuantificar incertidumbre sobre uso de armas, grupos etarios y tendencias temporales de registros delictivos. |
-| Preparación | Integración de Excel, normalización de texto, tratamiento de faltantes, fechas y agrupación de categorías. |
-| Bases utilizadas por R | Bogotá: **419.907 registros**, 7 variables. Cali: **214.299 registros**, 17 variables. |
-| Modelado | Muestras de **400 registros o eventos**, según la sección; no se ajustaron los modelos con todas las filas. |
-| Inferencia | Priors explícitas, actualización conjugada, simulación y regresión bayesiana con **brms / Stan**. |
-| Evaluación | Intervalos creíbles y chequeos predictivos que también identifican limitaciones del modelo. |
-
-> **El aporte central:** formular preguntas probabilísticas y explicar qué permiten concluir los datos, no limitarse a producir una predicción puntual.
-
+<a id="ruta"></a>
 ## De la fuente a la inferencia
 
 ```mermaid
 flowchart LR
-    A[Excel y CSV de registros] --> B[Python: integración y limpieza]
-    B --> C[CSV preparados por ciudad]
-    C --> D[R: muestreo y modelos bayesianos]
-    D --> E[Posteriores e intervalos creíbles]
-    E --> F[Chequeos predictivos e interpretación]
-    F --> G[Informe académico histórico]
+    A["Excel y CSV"] --> B["Python<br/>integración y limpieza"]
+    B --> C["Muestras por pregunta"]
+    C --> D["R<br/>modelos bayesianos"]
+    D --> E["Posteriores<br/>e intervalos creíbles"]
+    E --> F["PPC e interpretación"]
+
+    classDef source fill:#EEF2FF,stroke:#3730A3,color:#172554
+    classDef process fill:#ECFDF5,stroke:#0F766E,color:#134E4A
+    classDef result fill:#FFF7ED,stroke:#C2410C,color:#7C2D12
+    class A source
+    class B,C,D process
+    class E,F result
 ```
 
-El diagrama representa el proceso realizado. Los notebooks conservan versiones de trabajo: su ejecución actual no constituye por sí sola una reconstrucción exacta de todos los insumos del informe. La sección de reproducibilidad explica esas diferencias.
+La preparación unifica esquemas, normaliza texto y fechas, trata faltantes y construye categorías. R utiliza esas salidas para actualizar priors, simular y evaluar modelos conjugados y de regresión.
 
-### 1. Preparación con Python
+<a id="preguntas"></a>
+## Preguntas y modelos
 
-- **Integración:** lectura recursiva de archivos Excel, selección de columnas comunes y creación de la categoría delictiva desde el nombre del archivo.
-- **Normalización:** minúsculas/mayúsculas, eliminación de tildes y variantes en municipios, delitos y categorías de no reporte.
-- **Calidad de datos:** revisión de tipos, frecuencias y faltantes; tratamiento de valores anómalos en medios empleados.
-- **Variables temporales:** conversión de fechas y extracción de horas.
-- **Cali:** agrupación de sitios, profesiones, clases de empleo, nacionalidades, edades y armas; exportación del conjunto preparado.
-
-La salida guardada de la base unificada muestra **1.873.996 filas**. Esa cifra corresponde a la preparación multiciudad: no es el tamaño de la muestra de inferencia ni exclusivamente el de Bogotá.
-
-### 2. Modelos con R
-
-| Pregunta | Modelo | Especificación implementada |
+| Pregunta | Modelo | Evidencia que se comunica |
 |---|---|---|
-| ¿La proporción registrada sin armas supera el 50 %? | Beta–Binomial | Prior Beta(2,85; 6,65), definida mediante media y varianza; actualización conjugada y simulación Random Walk Metropolis. |
-| ¿La proporción del grupo adulto supera el 65 %? | Dirichlet–Multinomial | Prior informativa, conteos por grupo etario y marginal Beta para calcular probabilidades e intervalos. |
-| ¿Cómo cambia el conteo anual esperado? | Poisson con enlace log | Modelos independientes para Bogotá y Cali: `log(lambda_t) = alpha + beta * (year - 2010)`. Priors normales y ajuste con brms / Stan. |
+| ¿La proporción registrada sin armas supera el 50 %? | Beta–Binomial | Probabilidad posterior e intervalo HPD |
+| ¿La proporción del grupo adulto supera el 65 %? | Dirichlet–Multinomial | Marginal Beta, probabilidad e intervalo creíble |
+| ¿Cómo cambia el conteo anual esperado? | Poisson bayesiano con enlace log | Posterior de la pendiente, razón temporal y chequeos predictivos |
 
-Los ajustes `brms` especifican **4 cadenas y 4.000 iteraciones por cadena**, con semilla 123. La fuente también contiene implementaciones manuales de Metropolis-within-Gibbs y simulación directa Dirichlet, como evidencia del trabajo con los mecanismos de inferencia.
+Los ajustes `brms` utilizan **4 cadenas**, **4.000 iteraciones por cadena** y semilla 123. La fuente también conserva implementaciones manuales de Metropolis-within-Gibbs y simulación Dirichlet para hacer explícitos los mecanismos de inferencia.
 
-## Resultados del informe
+<a id="resultados"></a>
+## Resultados que sí permite afirmar
 
-Las siguientes cifras provienen de las salidas históricas del PDF; no se recalcularon para esta publicación.
+| Análisis | Resultado posterior conservado | Lectura |
+|---|---:|---|
+| Registros sin armas | `P(θ > 0,5) = 11,95 %`; HPD 95 % **[42,27 %; 51,92 %]** | No alcanza el criterio definido para afirmar una proporción superior al 50 %. |
+| Grupo etario adulto | `P(θ > 0,65) = 82,62 %`; intervalo 95 % **[62,83 %; 70,92 %]** | Favorece superar el umbral, aunque el intervalo incluye el 65 %. |
+| Tendencia de Cali | `P(β > 0) = 75,55 %`; razón 2019/2010 **[0,818; 1,510]** | Señal creciente bajo el modelo, sin evidencia concluyente según el criterio establecido. |
+| Diferencia de pendientes | `P(βBogotá > βCali)` cercana a 1; intervalo **[0,2773; 0,3621]** | Bogotá presenta una pendiente mayor en las muestras y modelos analizados. |
 
-| Análisis | Resultado guardado | Interpretación |
-|---|---|---|
-| Registros sin armas | `P(theta > 0,5) = 11,95 %`; HPD 95 % **[42,27 %; 51,92 %]**. | No alcanza el criterio de evidencia fuerte para afirmar una proporción superior al 50 %. |
-| Grupo etario adulto | `P(theta > 0,65) = 82,62 %`; intervalo creíble 95 % **[62,83 %; 70,92 %]**. | Favorece superar el umbral, pero el intervalo incluye el 65 % y la probabilidad no llega al criterio del 95 %. |
-| Tendencia de Cali | `P(beta > 0) = 75,55 %`; razón 2019/2010 con intervalo 95 % **[0,818; 1,510]**. | Estimación central levemente creciente, sin evidencia concluyente bajo el criterio establecido. |
-| Diferencia de pendientes | `P(beta_Bogota > beta_Cali)` cercana a 1; intervalo 95 % **[0,2773; 0,3621]**. | En los modelos y muestras analizados, la pendiente de Bogotá es mayor. No equivale a comparar riesgos por habitante. |
+> **⚠️ Alcance:** estas cifras provienen de salidas históricas del informe. No se presentan como predicción fuera de muestra, tasas por habitante, evidencia causal ni demostración de cobertura uniforme.
 
-Referencias dentro del informe: proporción sin armas, pp. 8–12; grupo adulto, pp. 17–21; Cali, pp. 34–35; comparación, p. 39.
+Los **posterior predictive checks** de Bogotá también muestran discrepancias en los extremos. Ese resultado orienta mejoras como sobredispersión o cambios de nivel, y recuerda que una posterior estrecha no valida por sí sola un modelo.
 
-### Evaluar también lo que el modelo no explica
+<a id="trabajo"></a>
+## Mi trabajo en este proyecto
 
-Los **posterior predictive checks** de Bogotá contrastan observaciones con simulaciones del modelo. El informe reconoce discrepancias en los extremos y plantea explorar sobredispersión o cambios de nivel. Esa revisión es parte del resultado: un ajuste no queda validado únicamente por producir una posterior estrecha.
+- Integré archivos Excel y CSV con esquemas heterogéneos y preparé categorías comparables por ciudad.
+- Diseñé preguntas probabilísticas y traduje cada una a un modelo bayesiano adecuado.
+- Implementé actualizaciones conjugadas, simulación manual y ajustes `brms`/Stan con una configuración reproducible dentro del informe histórico.
+- Interpreté probabilidades posteriores, intervalos creíbles y chequeos predictivos sin convertirlos en afirmaciones causales.
 
-No se presentan estos resultados como predicción fuera de muestra, evidencia causal, tasas por habitante ni demostración de cobertura uniforme de los registros.
+### Competencias demostradas
 
-## Qué demuestra este proyecto
-
-| Competencia | Evidencia concreta |
+| Competencia | Evidencia |
 |---|---|
-| Preparación de datos heterogéneos | Integración de Excel y CSV con normalización de esquemas y categorías. |
-| Fundamentos estadísticos | Formulación de verosimilitudes, priors y actualizaciones posteriores conjugadas. |
-| Computación bayesiana | Uso de brms / Stan y código de simulación manual para comprender la inferencia. |
-| Interpretación de incertidumbre | Probabilidades posteriores, intervalos creíbles y comparación de cantidades derivadas. |
-| Criterio de modelado | Chequeos predictivos y reconocimiento de discrepancias del modelo Poisson. |
-| Comunicación técnica | Código R Markdown e informe que conectan preguntas, supuestos, resultados e interpretación. |
+| Preparación de datos | Normalización de esquemas, categorías, fechas y faltantes en Python |
+| Inferencia bayesiana | Beta–Binomial, Dirichlet–Multinomial y Poisson con enlace log |
+| Computación estadística | `brms`/Stan y algoritmos manuales para comprender la inferencia |
+| Criterio de modelado | Posterior predictive checks y lectura de discrepancias |
+| Comunicación | R Markdown, informe PDF, tablas y conclusiones con alcance explícito |
 
-### Tecnologías utilizadas
+<a id="evidencia"></a>
+## Evidencia y archivos
 
-- **Python:** pandas, NumPy, Matplotlib; `re`, `unicodedata`, `glob` y `os` para preparación e integración.
-- **R:** dplyr, tidyr, lubridate, ggplot2, gridExtra y funciones estadísticas de R.
-- **Inferencia:** brms / Stan, modelos conjugados y algoritmos de simulación explícitos.
-- **Documentación:** Jupyter Notebook, R Markdown / knitr y salida PDF con XeLaTeX.
-
-## Recorrido por el repositorio
-
-| Archivo | Qué revisar |
+| Evidencia | Qué revisar |
 |---|---|
-| [Fuente del análisis](analysis/Proyecto_bayesiana_delitos.Rmd) | Modelos, fórmulas, código y discurso precisado para portafolio. |
-| [Informe académico histórico](report/Proyecto_bayesiana_delitos.pdf) | Salidas y visualizaciones conservadas de mayo de 2025. |
-| [Limpieza de registros](preprocessing/delitos_limpieza.ipynb) | Normalización y revisión de calidad; su exportación final es una variante de hurtos 2011–2018. |
-| [Preparación de Cali](preprocessing/proyecto.ipynb) | Tratamiento de variables y exportación de la base de Cali. |
+| [Fuente del análisis](analysis/Proyecto_bayesiana_delitos.Rmd) | Código R, fórmulas, priors, simulaciones y modelos |
+| [Informe histórico](report/Proyecto_bayesiana_delitos.pdf) | Resultados y visualizaciones conservados; proporción sin armas, pp. 8–12; grupo adulto, pp. 17–21; Cali, pp. 34–35; comparación, p. 39 |
+| [Limpieza de registros](preprocessing/delitos_limpieza.ipynb) | Normalización y revisión de calidad de datos |
+| [Preparación de Cali](preprocessing/proyecto.ipynb) | Tratamiento de variables y exportación de la base de Cali |
 
+### Tecnologías
+
+**Python:** pandas, NumPy, Matplotlib, `re`, `unicodedata`, `glob`, `os` · **R:** dplyr, tidyr, lubridate, ggplot2, gridExtra · **Inferencia:** brms, Stan, modelos conjugados y simulación · **Documentación:** Jupyter, R Markdown, knitr y XeLaTeX.
+
+<a id="detalles"></a>
 ## Alcance y reproducibilidad
 
 <details>
-<summary><strong>Versiones, unidades de análisis y ejecución</strong></summary>
+<summary><strong>Estado histórico, unidades y entorno</strong></summary>
 
-**Esta edición es documental.** No se ejecutaron notebooks, R ni modelos. Los notebooks y el PDF se conservan byte a byte; en la copia R Markdown se precisó el discurso, sin modificar bloques de código ni expresiones R. Por ello, algunos comentarios históricos del código conservan terminología aclarada en el texto.
+Esta edición es documental: no se ejecutaron notebooks, R ni modelos para esta publicación. El PDF corresponde al informe de mayo de 2025 y la fuente R Markdown conserva bloques de trabajo que no aparecen en ese PDF. Las cifras de resultados son las salidas históricas citadas arriba. La copia R Markdown conserva el discurso revisado, sin modificar bloques de código ni expresiones R.
 
-**PDF histórico, no recompilación actual.** La fuente Rmd contiene bloques de simulación que no aparecen en el PDF de mayo de 2025. El PDF conserva sus resultados y redacción originales; las precisiones de esta edición se encuentran en el README y en la copia Rmd.
-
-**Versiones de Bogotá.** Se verificó que el CSV de Bogotá usado por R contiene 419.907 registros entre 2010 y 2019, y que coincide byte a byte con su copia en la carpeta Python. Sin embargo, el notebook de limpieza actualmente conservado termina exportando otra variante: hurtos/abigeato de 2011–2018. No se presenta como reconstrucción exacta del insumo histórico.
-
-**Registros no siempre equivalen a eventos.** Bogotá suma `CANTIDAD` dentro de la muestra; Cali cuenta filas después de eliminar esa columna. El CSV original de Cali contiene 214.299 registros y 215.104 eventos, con 697 registros de cantidad mayor que uno. La comparación describe las unidades implementadas y no demuestra equivalencia completa de cobertura entre fuentes.
-
-**Datos y entorno.** No se incluyen los CSV ni los archivos Excel originales. Las fuentes conservan rutas locales históricas y no se agregó un entorno bloqueado de dependencias. Para reproducir el estudio habría que recuperar y verificar las versiones de los datos, ajustar rutas y revisar el entorno; este repositorio no afirma ejecución directa ni reproducción validada.
-
-**Semántica de categorías.** Se habla del grupo etario registrado, sin atribuir automáticamente esa edad al perpetrador. En el primer modelo, la categoría complementaria a «sin empleo de armas» incluye otras categorías, entre ellas registros sin reporte; no se interpreta como confirmación individual de uso de armas.
+La preparación guardada muestra **1.873.996 filas**. La entrada histórica de Bogotá corresponde a **419.907 registros de 2010–2019**; el notebook de limpieza conservado exporta después otra variante de hurtos/abigeato de 2011–2018, por lo que no se presenta como reconstrucción exacta. En Cali, **214.299 filas representan 215.104 eventos** al considerar `CANTIDAD`; las unidades no son intercambiables. No se incluyen los CSV ni los Excel originales y no hay un entorno de dependencias bloqueado. Reproducir el análisis requiere recuperar las fuentes históricas, ajustar rutas y revisar versiones.
 
 </details>
 
-### Procedencia de los datos
+<details>
+<summary><strong>Procedencia y semántica</strong></summary>
 
-El material del proyecto atribuye los archivos de Bogotá al portal de [estadística delictiva de la Policía Nacional de Colombia](https://www.policia.gov.co/estadistica-delictiva) y los de Cali al [portal de datos abiertos de Santiago de Cali](https://datos.cali.gov.co). Estos enlaces identifican los portales citados en el trabajo, no una garantía de disponibilidad de las versiones históricas exactas. Los datos originales no se redistribuyen aquí.
+Los archivos se atribuyen al portal de [estadística delictiva de la Policía Nacional de Colombia](https://www.policia.gov.co/estadistica-delictiva) y al [portal de datos abiertos de Santiago de Cali](https://datos.cali.gov.co). Los enlaces identifican los portales citados, no garantizan la disponibilidad de las mismas versiones históricas.
 
----
+Las categorías describen registros del dataset. El grupo etario no se interpreta automáticamente como edad del perpetrador. “Sin empleo de armas” es la categoría literal usada en el análisis; su complemento agrupa otras categorías, incluidos registros sin reporte, por lo que no se interpreta como confirmación individual de uso de armas.
 
-**Un proyecto para mostrar el proceso completo:** preparar datos, explicitar supuestos, inferir con incertidumbre y comunicar resultados sin ocultar sus límites.
+</details>
+
+## Créditos y procedencia
+
+Proyecto académico de estadística bayesiana. Autor: **Fabián Tovar**. Los datos originales no se redistribuyen en este repositorio.
